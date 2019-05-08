@@ -22,7 +22,6 @@ function GameObject(createdAt, name, dimensions) {
 }
 
 GameObject.prototype.destroy = function() {
-  this.healthPoints = 0;
   return `${this.name} was removed from the game.`;
 };
 
@@ -41,11 +40,8 @@ function CharacterStats(createdAt, name, dimensions, healthPoints) {
 CharacterStats.prototype = Object.create(GameObject.prototype);
 
 CharacterStats.prototype.takeDamage = function(points) {
-  if (this.healthPoints <= 0)
-    return `${this.name} has been destroyed`;
-
   this.healthPoints -= points;
-  return `${this.name} took damage.`;
+  return `${this.name} took damage.\n`;
 };
 
 /*
@@ -79,42 +75,32 @@ Humanoid.prototype.greet = function() {
 
 Humanoid.prototype.logPoint = function() {
   return this.healthPoints ? `${this.name} has a health point of ${this.healthPoints}` : `${this.name} is destroyed`;
-}
+};
 
 Humanoid.prototype.bluff = function() {
-  return `HAHAHAHAHAAHHAAHAAAA!!!!! I am ${this.name}, I will kill you with my ${this.weapons[0]}`
-}
+  return `HAHAHAHAHAAHHAAHAAAA!!!!! I am ${
+    this.name
+  }, I will kill you with my ${this.weapons[0]}`;
+};
 
 // Stretch task:
 // * Create Villain and Hero constructor functions that inherit from the Humanoid constructor function.
 // * Give the Hero and Villains different methods that could be used to remove health points from objects which could result in destruction if health gets to 0 or drops below 0;
 // * Create two new objects, one a villain and one a hero and fight it out with methods!
 
-function Hero(heroAttribute) {
+function HeroVillainCharacter(heroAttribute) {
   Humanoid.call(this, heroAttribute);
 }
 
-Hero.prototype = Object.create(Humanoid.prototype);
+HeroVillainCharacter.prototype = Object.create(Humanoid.prototype);
 
-Hero.prototype.attack = function(victim) {
+HeroVillainCharacter.prototype.attack = function(victim) {
+  if(victim.healthPoints <= 0) {
+    return `${victim.name} has been destroyed and is no longer in the game.`;
+  }
+
   victim.takeDamage(5);
-  return `${this.name} attacked ${victim.name}!!! Damage inflicted`;
-};
-
-Hero.prototype.annihilate = function(victim) {
-  victim.destroy();
-  return `${this.name} just annihilated ${victim.name}!`;
-};
-
-function Villain(villainAttribute) {
-  Humanoid.call(this, villainAttribute);
-}
-
-Villain.prototype = Object.create(Humanoid.prototype);
-
-Villain.prototype.commitEvil = function(victim) {
-  victim.takeDamage(5);
-  return `Watchout ${victim.name}, ${this.name} is up to no good. Damage inflicted on ${victim.name}`;
+  return `${this.name} attacked ${victim.name}!!! Damage inflicted. ${victim.logPoint()}.`;
 };
 
 /*
@@ -167,7 +153,7 @@ const archer = new Humanoid({
   language: "Elvish"
 });
 
-const batman = new Hero({
+const batman = new HeroVillainCharacter({
   createdAt: new Date(),
   dimensions: {
     length: 2,
@@ -181,7 +167,7 @@ const batman = new Hero({
   language: "English"
 });
 
-const joker = new Villain({
+const joker = new HeroVillainCharacter({
   createdAt: new Date(),
   dimensions: {
     length: 2,
@@ -191,7 +177,7 @@ const joker = new Villain({
   healthPoints: 30,
   name: "The Joker",
   team: "Fiendish Villains",
-  weapons: ["Joker venoms", "Knives"],
+  weapons: ["Joker venom", "Knives"],
   language: "English"
 });
 
@@ -206,20 +192,15 @@ console.log(archer.greet()); // Lilith offers a greeting in Elvish.
 console.log(mage.takeDamage()); // Bruce took damage.
 console.log(swordsman.destroy()); // Sir Mustachio was removed from the game.
 
-
 // Batman and joker fight begins here
-console.log('\nBatman faces off against The Joker.\n')
-console.log(batman.bluff());
-console.log(joker.bluff());
-console.log(batman.logPoint());
-console.log(joker.logPoint());
-console.log(batman.attack(joker));
-console.log(joker.logPoint());
-console.log(joker.commitEvil(batman));
-console.log(batman.logPoint());
-console.log(batman.attack(joker));
-console.log(joker.logPoint());
-console.log(joker.commitEvil(batman));
-console.log(batman.logPoint());
-console.log(batman.annihilate(joker));
-console.log(joker.logPoint());
+
+// console.log('\nBatman faces off against The Joker.\n')
+// console.log(batman.bluff());
+// console.log(joker.bluff());
+// console.log(batman.logPoint());
+// console.log(joker.logPoint());
+// console.log(batman.attack(joker));
+// console.log(joker.attack(batman));
+// console.log(batman.attack(joker));
+// console.log(joker.attack(batman));
+// console.log(batman.attack(joker));
