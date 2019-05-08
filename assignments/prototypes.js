@@ -22,6 +22,7 @@ function GameObject(createdAt, name, dimensions) {
 }
 
 GameObject.prototype.destroy = function() {
+  this.healthPoints = 0;
   return `${this.name} was removed from the game.`;
 };
 
@@ -39,7 +40,11 @@ function CharacterStats(createdAt, name, dimensions, healthPoints) {
 
 CharacterStats.prototype = Object.create(GameObject.prototype);
 
-CharacterStats.prototype.takeDamage = function() {
+CharacterStats.prototype.takeDamage = function(points) {
+  if (this.healthPoints <= 0)
+    return `${this.name} has been destroyed`;
+
+  this.healthPoints -= points;
   return `${this.name} took damage.`;
 };
 
@@ -72,6 +77,14 @@ Humanoid.prototype.greet = function() {
   return `${this.name} offers greetings in ${this.language}`;
 };
 
+Humanoid.prototype.logPoint = function() {
+  return this.healthPoints ? `${this.name} has a health point of ${this.healthPoints}` : `${this.name} is destroyed`;
+}
+
+Humanoid.prototype.bluff = function() {
+  return `HAHAHAHAHAAHHAAHAAAA!!!!! I am ${this.name}, I will kill you with my ${this.weapons[0]}`
+}
+
 // Stretch task:
 // * Create Villain and Hero constructor functions that inherit from the Humanoid constructor function.
 // * Give the Hero and Villains different methods that could be used to remove health points from objects which could result in destruction if health gets to 0 or drops below 0;
@@ -83,12 +96,14 @@ function Hero(heroAttribute) {
 
 Hero.prototype = Object.create(Humanoid.prototype);
 
-Hero.prototype.attack = function() {
-  return `${this.name} attacked. Damage inflicted`;
+Hero.prototype.attack = function(victim) {
+  victim.takeDamage(5);
+  return `${this.name} attacked ${victim.name}!!! Damage inflicted`;
 };
 
-Hero.prototype.annihilate = function() {
-  return `${this.name} just annihilated his opponent!`;
+Hero.prototype.annihilate = function(victim) {
+  victim.destroy();
+  return `${this.name} just annihilated ${victim.name}!`;
 };
 
 function Villain(villainAttribute) {
@@ -97,8 +112,9 @@ function Villain(villainAttribute) {
 
 Villain.prototype = Object.create(Humanoid.prototype);
 
-Villain.prototype.commitEvil = function() {
-  return `${this.name} is up to no good.`;
+Villain.prototype.commitEvil = function(victim) {
+  victim.takeDamage(5);
+  return `Watchout ${victim.name}, ${this.name} is up to no good. Damage inflicted on ${victim.name}`;
 };
 
 /*
@@ -190,5 +206,20 @@ console.log(archer.greet()); // Lilith offers a greeting in Elvish.
 console.log(mage.takeDamage()); // Bruce took damage.
 console.log(swordsman.destroy()); // Sir Mustachio was removed from the game.
 
-console.log(batman.greet());
-console.log(joker.greet());
+
+// Batman and joker fight begins here
+console.log('\nBatman faces off against The Joker.\n')
+console.log(batman.bluff());
+console.log(joker.bluff());
+console.log(batman.logPoint());
+console.log(joker.logPoint());
+console.log(batman.attack(joker));
+console.log(joker.logPoint());
+console.log(joker.commitEvil(batman));
+console.log(batman.logPoint());
+console.log(batman.attack(joker));
+console.log(joker.logPoint());
+console.log(joker.commitEvil(batman));
+console.log(batman.logPoint());
+console.log(batman.annihilate(joker));
+console.log(joker.logPoint());
